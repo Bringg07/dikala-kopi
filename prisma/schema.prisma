@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Menu {
+  id           String   @id @default(cuid())
+  name         String
+  description String
+  price        Int
+  category     String   // Coffee, Manual Brew, Non Coffee, dll
+  image        String
+  isBestSeller Boolean @default(false)
+  createdAt    DateTime @default(now())
+}
+
+model Reservation {
+  id           String   @id @default(cuid())
+  name         String
+  whatsapp     String
+  email        String
+  guests       Int
+  date         DateTime
+  time         String
+  notes        String?
+  status       String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED
+  createdAt    DateTime @default(now())
+}
+
+model Post {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  content      String
+  image        String?
+  category     String
+  createdAt    DateTime @default(now())
+}
+
+model Gallery {
+  id        String   @id @default(cuid())
+  title     String?
+  imageUrl  String
+  createdAt DateTime @default(now())
+}
