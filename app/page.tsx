@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 
 export default async function Home() {
   let menus: Array<{ id: string; name: string; description: string; price: number; category: string; image: string; isBestSeller: boolean }> = [];
+  let galleries: Array<{ id: string; title: string | null; imageUrl: string }> = [];
 
   try {
     menus = await prisma.menu.findMany({
@@ -15,6 +16,14 @@ export default async function Home() {
     });
   } catch (error) {
     console.error("Gagal mengambil data menu publik:", error);
+  }
+
+  try {
+    galleries = await prisma.gallery.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("Gagal mengambil data galeri publik:", error);
   }
 
   const jsonLd = {
@@ -51,7 +60,8 @@ export default async function Home() {
       
       <MenuSection initialMenus={menus} />
       
-      <GallerySection />
+      {/* Kirim data galeri ke komponen GallerySection */}
+      <GallerySection initialGalleries={galleries} />
 
       {/* Bagian Reservasi Meja */}
       <section id="reservasi" className="py-24 px-4 bg-[#181615] relative border-t border-white/5">
@@ -68,7 +78,6 @@ export default async function Home() {
             </p>
           </div>
           
-          {/* Form langsung dipanggil di sini tanpa kontainer putih bertumpuk */}
           <ReservationForm />
         </div>
       </section>

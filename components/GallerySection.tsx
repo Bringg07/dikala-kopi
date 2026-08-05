@@ -4,59 +4,78 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
-// Placeholder gambar berkualitas tinggi untuk preview
-const galleryImages = [
-  { id: 1, src: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", alt: "Interior Cafe", className: "col-span-1 md:col-span-2 row-span-2" },
-  { id: 2, src: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", alt: "Kopi Latte", className: "col-span-1 row-span-1" },
-  { id: 3, src: "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", alt: "Barista Menyeduh", className: "col-span-1 row-span-1" },
-  { id: 4, src: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", alt: "Suasana Outdoor", className: "col-span-1 md:col-span-2 row-span-1" },
-  { id: 5, src: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", alt: "Kue Croissant", className: "col-span-1 row-span-1" },
-  { id: 6, src: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", alt: "Biji Kopi", className: "col-span-1 row-span-1" },
-];
+interface GalleryItem {
+  id: string;
+  title: string | null;
+  imageUrl: string;
+}
 
-export default function GallerySection() {
+interface GallerySectionProps {
+  initialGalleries: GalleryItem[];
+}
+
+export default function GallerySection({ initialGalleries }: GallerySectionProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  // Jika belum ada foto di database, kita bisa sediakan fallback atau tampilkan kosong
+  const displayGalleries = initialGalleries.length > 0 ? initialGalleries : [];
+
   return (
-    <section className="py-24 px-4 bg-warmWhite">
+    <section className="py-24 px-4 bg-[#121110]">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-serif text-4xl md:text-5xl text-espresso mb-4"
+            className="font-serif text-4xl md:text-5xl text-white mb-4"
           >
             Gallery Experience
           </motion.h2>
-          <p className="text-espresso/70 max-w-2xl mx-auto">
+          <p className="text-gray-400 max-w-2xl mx-auto">
             Intip suasana hangat dan momen berharga yang tercipta di setiap sudut Dikala Kopi.
           </p>
         </div>
 
-        {/* Grid Layout ala Masonry */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
-          {galleryImages.map((img, index) => (
-            <motion.div
-              key={img.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative overflow-hidden rounded-2xl cursor-pointer group ${img.className}`}
-              onClick={() => setSelectedImage(img.src)}
-            >
-              <img 
-                src={img.src} 
-                alt={img.alt} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span className="text-white font-medium tracking-wide">Lihat</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {/* Grid Layout Galeri */}
+        {displayGalleries.length === 0 ? (
+          <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl text-gray-500">
+            Belum ada foto galeri yang diunggah. Silakan tambah melalui halaman Admin.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
+            {displayGalleries.map((img, index) => {
+              // Membuat variasi ukuran card grid ala masonry secara otomatis
+              const isLarge = index % 3 === 0;
+              const className = isLarge 
+                ? "col-span-1 md:col-span-2 row-span-2" 
+                : "col-span-1 row-span-1";
+
+              return (
+                <motion.div
+                  key={img.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className={`relative overflow-hidden rounded-2xl cursor-pointer group ${className}`}
+                  onClick={() => setSelectedImage(img.imageUrl)}
+                >
+                  <img 
+                    src={img.imageUrl} 
+                    alt={img.title || "Galeri Dikala Kopi"} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="text-white font-medium tracking-wide bg-black/50 px-4 py-2 rounded-xl backdrop-blur-sm text-sm">
+                      {img.title || "Lihat"}
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Lightbox Modal */}
@@ -70,10 +89,10 @@ export default function GallerySection() {
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
           >
             <button 
-              className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors"
+              className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors bg-white/10 p-2 rounded-full"
               onClick={() => setSelectedImage(null)}
             >
-              <X className="w-8 h-8" />
+              <X className="w-6 h-6" />
             </button>
             <motion.img
               initial={{ scale: 0.8 }}
@@ -81,8 +100,8 @@ export default function GallerySection() {
               exit={{ scale: 0.8 }}
               src={selectedImage}
               alt="Enlarged gallery view"
-              className="max-w-full max-h-[90vh] rounded-xl shadow-2xl object-contain"
-              onClick={(e) => e.stopPropagation()} // Mencegah modal tertutup saat gambar diklik
+              className="max-w-full max-h-[90vh] rounded-2xl shadow-2xl object-contain"
+              onClick={(e) => e.stopPropagation()} 
             />
           </motion.div>
         )}

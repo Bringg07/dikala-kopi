@@ -23,6 +23,7 @@ export default function TambahBlogPage() {
       await addPost(formData);
       router.push("/admin/blog");
     } catch (error) {
+      console.error("Terjadi kesalahan:", error);
       alert("Gagal menyimpan artikel");
     } finally {
       setIsLoading(false);
@@ -69,7 +70,15 @@ export default function TambahBlogPage() {
             </span>
             {!imageUrl && (
               <UploadButton
-                onClientUploadComplete={(res: Array<{ url: string }>) => setImageUrl(res[0].url)}
+                endpoint="imageUploader" /* HARUS ADA: sesuaikan dengan nama di core.ts Anda jika berbeda */
+                onClientUploadComplete={(res) => {
+                  if (res && res.length > 0) {
+                    setImageUrl(res[0].url);
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  alert(`Gagal mengunggah gambar: ${error.message}`);
+                }}
               />
             )}
           </div>
@@ -89,7 +98,7 @@ export default function TambahBlogPage() {
         <button 
           type="submit" 
           disabled={isLoading}
-          className="w-full bg-espresso text-white py-3.5 rounded-xl font-medium hover:bg-espresso/90 transition-colors disabled:opacity-50"
+          className="w-full bg-amber-800 text-white py-3.5 rounded-xl font-medium hover:bg-amber-900 transition-colors disabled:opacity-50"
         >
           {isLoading ? "Menyimpan..." : "Publikasikan Artikel"}
         </button>

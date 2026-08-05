@@ -16,12 +16,20 @@ export default function AddMenuForm() {
           alert("Harap unggah gambar terlebih dahulu!");
           return;
         }
+        
         // Tambahkan imageUrl ke dalam formData sebelum dikirim
         formData.append("image", imageUrl);
-        await addMenu(formData);
         
-        formRef.current?.reset();
-        setImageUrl(""); // Reset gambar
+        try {
+          await addMenu(formData);
+          // Kosongkan form dan reset state gambar jika berhasil
+          formRef.current?.reset();
+          setImageUrl(""); 
+          alert("Menu berhasil ditambahkan!");
+        } catch (error) {
+          console.error("Gagal menyimpan menu:", error);
+          alert("Terjadi kesalahan saat menyimpan menu.");
+        }
       }} 
       className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4"
     >
@@ -47,8 +55,14 @@ export default function AddMenuForm() {
         </span>
         {!imageUrl && (
           <UploadButton
-            onClientUploadComplete={(res: Array<{ url: string }>) => {
-              setImageUrl(res[0].url);
+            endpoint="imageUploader" /* HARUS ADA: sesuaikan dengan nama endpoint di app/api/uploadthing/core.ts Anda */
+            onClientUploadComplete={(res) => {
+              if (res && res.length > 0) {
+                setImageUrl(res[0].url);
+              }
+            }}
+            onUploadError={(error: Error) => {
+              alert(`Gagal mengunggah gambar: ${error.message}`);
             }}
           />
         )}
@@ -62,7 +76,7 @@ export default function AddMenuForm() {
           <span className="text-sm font-medium text-gray-700">Tandai sebagai Best Seller</span>
         </label>
         
-        <button type="submit" className="bg-espresso text-white px-6 py-2.5 rounded-xl font-medium hover:bg-espresso/90 transition-colors">
+        <button type="submit" className="bg-amber-800 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-amber-900 transition-colors">
           Simpan Menu
         </button>
       </div>

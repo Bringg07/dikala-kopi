@@ -21,12 +21,16 @@ export default async function AdminBlogPage() {
           <h2 className="text-2xl font-serif font-bold text-espresso">Kelola Artikel Blog</h2>
           <p className="text-gray-500 text-sm mt-1">Tulis artikel untuk meningkatkan SEO dan edukasi pelanggan.</p>
         </div>
+        
+        {/* 👇 BAGIAN INI YANG DIPERBAIKI (Ganti bg-espresso jadi bg-slate-900) 👇 */}
         <Link 
           href="/admin/blog/tambah" 
-          className="bg-espresso text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-espresso/90 transition-colors flex items-center gap-2"
+          className="bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors flex items-center gap-2"
         >
           <PlusCircle size={18} /> Tulis Artikel Baru
         </Link>
+        {/* 👆 ========================================================== 👆 */}
+        
       </div>
 
       {/* Tabel Daftar Artikel */}
