@@ -12,7 +12,7 @@ const handler = NextAuth({
       async authorize(credentials) {
         if (
           credentials?.username === "admin" &&
-          credentials?.password === "DikalaKopi2024!"
+          credentials?.password === "DikalaKopi2026!"
         ) {
           return { id: "1", name: "Admin Dikala", email: "admin@dikalakopi.com" };
         }
